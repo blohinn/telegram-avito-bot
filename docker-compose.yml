@@ -1,0 +1,42 @@
+version: '2'
+
+services:
+
+  bot:
+    restart: always
+    build: .
+    working_dir: /bot
+    volumes:
+      - .:/bot
+    environment:
+      - BOT_API_TOKEN=${BOT_API_TOKEN}
+    depends_on:
+      - mongodb
+    links:
+      - mongodb
+    command: python main.py
+
+  updates:
+    restart: always
+    build: .
+    working_dir: /bot
+    volumes:
+      - .:/bot
+    environment:
+      - BOT_API_TOKEN=${BOT_API_TOKEN}
+    depends_on:
+      - mongodb
+    links:
+      - mongodb
+    command: python updates.py
+
+  mongodb:
+    restart: always
+    image: mongo:latest
+    environment:
+      - MONGO_DATA_DIR=/dockerdata/db
+    volumes:
+          - ./dockerdata/db:/data/db
+    ports:
+      - 27017:27017
+    command: mongod
