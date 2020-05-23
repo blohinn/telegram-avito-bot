@@ -5,15 +5,16 @@ from bs4 import BeautifulSoup
 from requests import RequestException
 
 
-def get_proxy():
-    proxy = requests.get(
-        'https://gimmeproxy.com/api/getProxy?country=RU&get=true&supportsHttps=true&protocol=http')
-    proxy_json = json.loads(proxy.content)
-    if proxy.status_code != 200 and 'ip' not in proxy_json:
-        raise RequestException
-    else:
-        return 'http://' + proxy_json['ip'] + ':' + proxy_json['port']
+# def get_proxy():
+#     proxy = requests.get(
+#         'https://gimmeproxy.com/api/getProxy?country=RU&get=true&supportsHttps=true&protocol=http')
+#     proxy_json = json.loads(proxy.content)
+#     if proxy.status_code != 200 and 'ip' not in proxy_json:
+#         raise RequestException
+#     else:
+#         return 'http://' + proxy_json['ip'] + ':' + proxy_json['port']
 
+AVITO_PROXY_HTTP = os.environ.get('AVITO_PROXY_HTTP')
 
 def get_html(url):
     import random
@@ -33,10 +34,10 @@ def get_html(url):
     headers = {
         'User-Agent': random.choice(USER_AGENTS)
     }
-    proxy = {
-        # 'https': get_proxy()
+    proxies = {
+        'http': AVITO_PROXY_HTTP,
     }
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, proxies=proxies)
     return response.content
 
 
