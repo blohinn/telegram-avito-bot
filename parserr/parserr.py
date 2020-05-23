@@ -3,6 +3,7 @@ import requests
 import time
 from bs4 import BeautifulSoup
 from requests import RequestException
+import os
 
 
 # def get_proxy():
