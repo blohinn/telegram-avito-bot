@@ -34,7 +34,7 @@ def get_html(url):
         'User-Agent': random.choice(USER_AGENTS)
     }
     proxy = {
-        'https': get_proxy()
+        # 'https': get_proxy()
     }
     response = requests.get(url, headers=headers)
     return response.content
