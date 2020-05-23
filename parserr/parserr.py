@@ -18,13 +18,17 @@ def get_proxy():
 def get_html(url):
     import random
     USER_AGENTS = [
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36',
         'Mozilla/5.0 (Linux; Android 7.0; SM-G930VC Build/NRD90M; wv)',
-        'Chrome/70.0.3538.77 Safari/537.36',
-        'Opera/9.68 (X11; Linux i686; en-US) Presto/2.9.344 Version/11.00',
-        'Mozilla/5.0 (compatible; MSIE 10.0; Windows 95; Trident/5.1)',
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_6) AppleWebKit/5342 (KHTML, like Gecko) Chrome/37.0.896.0 Mobile Safari/5342',
-        'Mozilla/5.0 (Windows; U; Windows NT 6.2) AppleWebKit/533.49.2 (KHTML, like Gecko) Version/5.0 Safari/533.49.2',
-        'Mozilla/5.0 (Windows NT 5.0; sl-SI; rv:1.9.2.20) Gecko/20110831 Firefox/37.0'
+        'Mozilla/5.0 (X11; Linux i686; rv:76.0) Gecko/20100101 Firefox/76.0',
+        'Mozilla/5.0 (Linux x86_64; rv:76.0) Gecko/20100101 Firefox/76.0',
+        'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:76.0) Gecko/20100101 Firefox/76.0',
+        'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:76.0) Gecko/20100101 Firefox/76.0',
+        'Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:76.0) Gecko/20100101 Firefox/76.0',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36',
     ]
     headers = {
         'User-Agent': random.choice(USER_AGENTS)
@@ -42,42 +46,55 @@ def get_ads_list(avito_search_url):
     :return: ads list
     """
     html = get_html(avito_search_url)
+
+    # f = open("avito-1.html", "r")
+    # html = f.read()
+
     soup = BeautifulSoup(html, 'lxml')
-    ads = soup.find_all('article', {'class': 'b-item'})
+
+    f = open("avito-test.html", "w+")
+    f.write(soup.prettify())
+    f.close()
+
+    print(f'html lenght {len(soup.prettify())}')
+
+    ads = soup.select('.item.item_table')
+
+    print(f'ads count {len(ads)}')
 
     ads_list = []
     for ad in ads:
-        ad_wrapper = ad.find('div', {'class': 'b-item-wrapper'})
-        ad_wrapper_a = ad_wrapper.find('a')
+        id, name, url, price, img_url, is_vip = None, None, None, None, None, False
 
-        ad_id = ad.attrs['data-item-id']
-        ad_url = 'https://m.avito.ru' + ad_wrapper_a.attrs['href']
-        ad_header = ad_wrapper_a.find('h3').text
+        id = ad.attrs.get('id')
+        if not id:
+            print("id for not found, ad has been skipped")
+            continue
 
-        ad_price = ad_wrapper_a.find('div', {'class': 'item-price'})
-        ad_price = ad_price.find('span').text
+        link = next((a for a in ad.select('a.snippet-link') if a.get('title')), None)
+        if link:
+            name = link['title']
+            url = f"https://www.avito.ru{link['href']}"
+        
+        price_span = next(iter(ad.select('span[data-marker="item-price"]')), None)
+        if price_span:
+            price = price_span.string.strip()
+            is_vip = 'snippet-price-vas' in price_span.attrs['class']
+        
+        img = next(iter(ad.select('img')), None)
+        img_url = img['src'] if img else ""
 
-        ad_img = ad_wrapper_a.find('div', {'class': 'item-img'})
-        ad_img_span = ad_img.find('span')
+        created_span = next(iter(ad.select('.snippet-date-info')), None)
+        created = created_span['data-tooltip'] if created_span else ""
 
-        if ad_img_span:
-            ad_img = ad_img_span.attrs['style']
-            ad_img = ad_img.split(' ')[1]
-            ad_img = 'https://' + ad_img[6:-2]
-        else:
-            ad_img = None
-
-        is_ad_premium = 'item-vip' in ad.attrs['class']
-        is_ad_highlight = 'item-highlight' in ad.attrs['class']
-
-        # print("%-70s %-15s %-15s" % (ad_header, ad_price, ad_id))
-        if not is_ad_premium and not is_ad_highlight:
+        if not is_vip:
+            # print("%-70s %-15s %-15s" % (name, price, id))
             ads_list.append({
-                'id': ad_id,
-                'title': ad_header.replace(u'\xa0', u' '),
-                'price': ad_price.replace(u'\xa0', u' '),
-                'url': ad_url,
-                'img': ad_img
+                'id': id,
+                'title': name,
+                'price': price,
+                'url': url,
+                'img': img_url,
             })
 
     return ads_list
@@ -89,3 +106,7 @@ def get_new_ads(new, old):
         if ad not in old:
             _.append(ad)
     return _
+
+
+if __name__ == '__main__':
+    get_ads_list('https://www.avito.ru/kazan/igry_pristavki_i_programmy/igrovye_pristavki-ASgBAgICAUSSAsoJ?q=ps4+pro')

@@ -8,6 +8,15 @@ API_TOKEN = os.environ.get('BOT_API_TOKEN')
 if not API_TOKEN:
     raise KeyError('Telegram bot token missed')
 
+
+# telebot.apihelper.proxy = {'https': 'https://nl-132-134-226.fri-gate0.org:443'}
+# telebot.apihelper.proxy = {'https': 'socks5h://213.136.89.190:13006'}
+# telebot.apihelper.proxy = {'https': 'socks5h://75.119.217.119:49244'}
+# telebot.apihelper.proxy = {'https': 'socks5h://72.11.148.222:56533'}
+# telebot.apihelper.proxy = {'https': 'socks5h://45.63.97.27:31801'}
+# telebot.apihelper.proxy = {'https': 'socks5://itg:yhMU6OtfTzapED736fUY@78.46.149.44:1080'}
+# print(telebot.apihelper.proxy)
+
 bot = telebot.TeleBot(API_TOKEN)
 
 
@@ -40,7 +49,6 @@ def waiting_url_step(message):
     search_url = message.text
     # На случай, если пользователь отравит такое сообщение: "https://avito.ru/kazan/avto/vaz бла бла"
     search_url = search_url.split(' ')[0]
-    search_url = search_url.lower()
 
     if not utils.check_avito_url(search_url):
         msg = bot.send_message(message.chat.id, 'Неккоректная ссылка.')
@@ -142,4 +150,5 @@ def send_list(message):
 
 
 if __name__ == '__main__':
+    print("start polling...")
     bot.polling(none_stop=True)
