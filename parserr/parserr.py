@@ -3,6 +3,7 @@ import requests
 import time
 from bs4 import BeautifulSoup
 from requests import RequestException
+from requests.auth import HTTPProxyAuth
 import os
 
 
@@ -37,6 +38,7 @@ def get_html(url):
     }
     proxies = {
         'http': AVITO_PROXY_HTTP,
+        'https': AVITO_PROXY_HTTP,
     }
     response = requests.get(url, headers=headers, proxies=proxies)
     return response.content
