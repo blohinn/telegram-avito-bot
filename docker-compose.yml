@@ -24,6 +24,7 @@ services:
       - .:/bot
     environment:
       - BOT_API_TOKEN=${BOT_API_TOKEN}
+      - AVITO_PROXY_HTTP=${AVITO_PROXY_HTTP}
     depends_on:
       - mongodb
     links:
