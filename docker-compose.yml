@@ -1,9 +1,9 @@
-version: '2'
+version: '3.3'
 
 services:
 
   bot:
-    restart: always
+    restart: unless-stopped
     build: .
     working_dir: /bot
     volumes:
@@ -17,7 +17,7 @@ services:
     command: python main.py
 
   updates:
-    restart: always
+    restart: unless-stopped
     build: .
     working_dir: /bot
     volumes:
@@ -31,12 +31,13 @@ services:
     command: python updates.py
 
   mongodb:
-    restart: always
+    restart: unless-stopped
     image: mongo:latest
-    environment:
-      - MONGO_DATA_DIR=/dockerdata/db
     volumes:
-          - ./dockerdata/db:/data/db
+      - mongodata:/data/db
     ports:
       - 27017:27017
     command: mongod
+
+volumes:
+  mongodata:
