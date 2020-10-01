@@ -1,13 +1,16 @@
-import telebot
-import db
-import utils
 import os
 
+import telebot
+
+import db
+import utils
+
 API_TOKEN = os.environ.get('BOT_API_TOKEN')
+BOT_USERS = [int(user_id) for user_id in os.environ.get('BOT_USERS').split(",")] if os.environ.get(
+    'BOT_USERS') else None  # Users IDs; None == any user
 
 if not API_TOKEN:
     raise KeyError('Telegram bot token missed')
-
 
 # telebot.apihelper.proxy = {'https': 'https://nl-132-134-226.fri-gate0.org:443'}
 # telebot.apihelper.proxy = {'https': 'socks5h://213.136.89.190:13006'}
@@ -19,8 +22,11 @@ if not API_TOKEN:
 
 bot = telebot.TeleBot(API_TOKEN)
 
+def is_allowed(message):
+    return message.chat.title is None and (BOT_USERS is None or message.from_user.id in BOT_USERS)
 
-@bot.message_handler(commands=['help', 'start'])
+
+@bot.message_handler(commands=['help', 'start'], func=lambda message: is_allowed(message))
 def send_welcome(message):
     msg = bot.send_message(message.chat.id, 'Данный бот следит за объявлениями по указанным ссылкам '
                                             'и присылает новые. '
@@ -28,7 +34,7 @@ def send_welcome(message):
 
 
 # # # Adding search # # #
-@bot.message_handler(commands=['add'])
+@bot.message_handler(commands=['add'], func=lambda message: is_allowed(message))
 def add_search(message):
     bot.send_message(message.chat.id,
                      'Укажите ссылку на поисковую выдачу Avito с нужными Вам фильтрами.\n'
@@ -111,7 +117,7 @@ def send_tracking_urls_list(uid):
 
 
 # # # Deleting search # # #
-@bot.message_handler(commands=['delete'])
+@bot.message_handler(commands=['delete'], func=lambda message: is_allowed(message))
 def deleting_search(message):
     if not db.get_users_tracking_urls_list(message.chat.id):
         bot.send_message(message.chat.id, 'Вы ничего не отслеживаете.')
@@ -141,7 +147,7 @@ def waiting_num_to_delete(message):
 # # # End deleting search # # #
 
 # # # Send list of tracking urls # # #
-@bot.message_handler(commands=['list'])
+@bot.message_handler(commands=['list'], func=lambda message: is_allowed(message))
 def send_list(message):
     send_tracking_urls_list(message.chat.id)
 
