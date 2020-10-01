@@ -1,22 +1,30 @@
 import json
-import requests
-import time
-from bs4 import BeautifulSoup
-from requests import RequestException
-from requests.auth import HTTPProxyAuth
 import os
 
+import requests
+from bs4 import BeautifulSoup
+from requests import RequestException
 
-# def get_proxy():
-#     proxy = requests.get(
-#         'https://gimmeproxy.com/api/getProxy?country=RU&get=true&supportsHttps=true&protocol=http')
-#     proxy_json = json.loads(proxy.content)
-#     if proxy.status_code != 200 and 'ip' not in proxy_json:
-#         raise RequestException
-#     else:
-#         return 'http://' + proxy_json['ip'] + ':' + proxy_json['port']
 
-AVITO_PROXY_HTTP = os.environ.get('AVITO_PROXY_HTTP')
+def get_proxy():
+    proxy = requests.get(
+        'https://gimmeproxy.com/api/getProxy?country=RU&get=true&supportsHttps=true&protocol=http')
+    proxy_json = json.loads(proxy.content)
+    if proxy.status_code != 200 and 'ip' not in proxy_json:
+        raise RequestException
+    else:
+        return proxy_json['ip'] + ':' + proxy_json['port']
+
+
+proxy_env = os.environ.get('AVITO_PROXY_HTTP')
+if proxy_env:
+    if proxy_env == "auto":
+        proxy_list = [get_proxy()]
+    else:
+        proxy_list = os.environ.get('AVITO_PROXY_HTTP').split(",")
+else:
+    proxy_list = [None]
+
 
 def get_html(url):
     import random
@@ -36,9 +44,10 @@ def get_html(url):
     headers = {
         'User-Agent': random.choice(USER_AGENTS)
     }
+    proxy = random.choice(proxy_list)
     proxies = {
-        'http': AVITO_PROXY_HTTP,
-        'https': AVITO_PROXY_HTTP,
+        'http': proxy,
+        'https': proxy,
     }
     response = requests.get(url, headers=headers, proxies=proxies)
     return response.content
@@ -79,12 +88,12 @@ def get_ads_list(avito_search_url):
         if link:
             name = link['title']
             url = f"https://www.avito.ru{link['href']}"
-        
+
         price_span = next(iter(ad.select('span[data-marker="item-price"]')), None)
         if price_span:
             price = price_span.text.strip()
             is_vip = 'snippet-price-vas' in price_span.attrs['class']
-        
+
         img = next(iter(ad.select('img')), None)
         img_url = img['src'] if img else ""
 
