@@ -10,6 +10,7 @@ services:
       - .:/bot
     environment:
       - BOT_API_TOKEN=${BOT_API_TOKEN}
+      - BOT_USERS=${BOT_USERS}
     depends_on:
       - mongodb
     links:
