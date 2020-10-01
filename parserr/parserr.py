@@ -82,7 +82,7 @@ def get_ads_list(avito_search_url):
         
         price_span = next(iter(ad.select('span[data-marker="item-price"]')), None)
         if price_span:
-            price = price_span.string.strip()
+            price = price_span.text.strip()
             is_vip = 'snippet-price-vas' in price_span.attrs['class']
         
         img = next(iter(ad.select('img')), None)
