@@ -16,6 +16,10 @@ def send_updates():
         for url in i['tracking_urls']:
             old_ads = url['ads']
             actual_ads = get_ads_list(url['url'])
+            while not actual_ads:
+                #TODO random timeout, several tries (not forever)
+                time.sleep(5)
+                actual_ads = get_ads_list(url['url'])
             print(f'parsed ads count = {len(actual_ads)}')
             new_ads = get_new_ads(actual_ads, old_ads)
             print(f'new_ads count = {len(new_ads)}')
@@ -37,7 +41,6 @@ def send_updates():
 
             import random
             time.sleep(random.randint(1, 15) / 10)
-
         db.set_actual_ads(i['uid'], tracking_urls)
 
 
