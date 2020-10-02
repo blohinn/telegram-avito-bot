@@ -58,14 +58,16 @@ def get_ads_list(avito_search_url):
     :param avito_search_url: url like https://m.avito.ru/kazan/avtomobili/inomarki?pmax=200000&pmin=50000
     :return: ads list
     """
-    html = get_html(avito_search_url)
-
+    try:
+        html = get_html(avito_search_url)
+    except BaseException:
+        return None
     # f = open("avito-1.html", "r")
     # html = f.read()
 
     soup = BeautifulSoup(html, 'lxml')
 
-    f = open("avito-test.html", "w+")
+    f = open("avito-test2.html", "w+")
     f.write(soup.prettify())
     f.close()
 

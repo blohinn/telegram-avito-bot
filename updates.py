@@ -4,7 +4,7 @@ import db
 from main import bot
 from parserr.parserr import get_ads_list, get_new_ads
 
-MSG = "{0}\n{1}\n{2}\n{3}"
+MSG = "{0}: {1}\n{2}\n{3}\n{4}"
 
 
 def send_updates():
@@ -15,9 +15,9 @@ def send_updates():
         tracking_urls = []
         for url in i['tracking_urls']:
             old_ads = url['ads']
+            print(url['name'])
             actual_ads = get_ads_list(url['url'])
             while not actual_ads:
-                #TODO random timeout, several tries (not forever)
                 time.sleep(5)
                 actual_ads = get_ads_list(url['url'])
             print(f'parsed ads count = {len(actual_ads)}')
@@ -25,7 +25,8 @@ def send_updates():
             print(f'new_ads count = {len(new_ads)}')
 
             for n_a in new_ads:
-                msg = MSG.format(n_a['title'].rstrip(), n_a['price'].rstrip(), n_a['created'].rstrip(), n_a['url'])
+                msg = MSG.format(url['name'], n_a['title'].rstrip(), n_a['price'].rstrip(), n_a['created'].rstrip(),
+                                 n_a['url'])
 
                 # if n_a['img']:
                 #     from utils import get_img_file_by_url
