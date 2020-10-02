@@ -106,6 +106,7 @@ def get_ads_list(avito_search_url):
                 'id': id,
                 'title': name,
                 'price': price,
+                'created': created,
                 'url': url,
                 'img': img_url,
             })

@@ -1,7 +1,11 @@
-import db
-from parserr.parserr import get_ads_list, get_new_ads
-from main import bot
 import time
+
+import db
+from main import bot
+from parserr.parserr import get_ads_list, get_new_ads
+
+MSG = "{0}\n{1}\n{2}\n{3}"
+
 
 def send_updates():
     print("start handling updates")
@@ -17,8 +21,7 @@ def send_updates():
             print(f'new_ads count = {len(new_ads)}')
 
             for n_a in new_ads:
-                msg = n_a['title'].rstrip() + '\n' + n_a['price'].rstrip() + \
-                      '\n' + n_a['url']
+                msg = MSG.format(n_a['title'].rstrip(), n_a['price'].rstrip(), n_a['created'].rstrip(), n_a['url'])
 
                 # if n_a['img']:
                 #     from utils import get_img_file_by_url
