@@ -67,7 +67,7 @@ def get_ads_list(avito_search_url):
 
     soup = BeautifulSoup(html, 'lxml')
 
-    f = open("avito-test2.html", "w+")
+    f = open("avito-test.html", "w+")
     f.write(soup.prettify())
     f.close()
 

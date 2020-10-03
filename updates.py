@@ -1,3 +1,4 @@
+import datetime
 import time
 
 import db
@@ -8,7 +9,7 @@ MSG = "{0}: {1}\n{2}\n{3}\n{4}"
 
 
 def send_updates():
-    print("start handling updates")
+    print(str(datetime.datetime.now()) + ": start handling updates")
     sce = db.get_search_collection_entries()
 
     for i in sce:
