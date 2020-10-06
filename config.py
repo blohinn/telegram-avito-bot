@@ -23,7 +23,7 @@ class Config(object):
     else:
         MONGO_HOST = "mongodb"
     WEBHOOK_HOST = os.environ.get('WEBHOOK_HOST')
-    WEBHOOK_PORT = os.environ.get('WEBHOOK_PORT') or 8443  # 443, 80, 88 or 8443 (port need to be 'open')
+    WEBHOOK_PORT = os.environ.get('WEBHOOK_PORT') or 88  # 443, 80, 88 or 8443 (port need to be 'open')
     WEBHOOK_LISTEN = os.environ.get('WEBHOOK_LISTEN') or '0.0.0.0'  # In some VPS you may need to put here the IP addr
 
     WEBHOOK_SSL_CERT = os.environ.get(

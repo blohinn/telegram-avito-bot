@@ -16,7 +16,7 @@ services:
       - WEBHOOK_PORT=${WEBHOOK_PORT}
       - WEBHOOK_LISTEN=${WEBHOOK_LISTEN}
     ports:
-      - 88:8443
+      - 88:88
     depends_on:
       - mongodb
     links:
