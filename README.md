@@ -4,7 +4,7 @@
 # Installation
 1) ```sudo apt-get install python3 git```
 2) ```git clone git@github.com:ShiawasenaHoshi/telegram-avito-bot; cd telegram-avito-bot```
-3) ```python3 -m venv venv; source venv/bin/activate; export FLASK_APP=bot.py;pip install -r requirements.txt; flask db upgrade```
+3) ```python3 -m venv venv; source venv/bin/activate; export FLASK_APP=bot.py;pip install -r requirements.txt```
 4) Copy ```.env.example``` to ```.env``` and change the BOT_USERS
  
  If you will use this bot from the local machine, then skip next section and go to ``Starting the bot``.
