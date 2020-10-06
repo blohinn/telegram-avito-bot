@@ -1,4 +1,3 @@
-import datetime
 import threading
 import time
 
@@ -55,7 +54,12 @@ class Bot(threading.Thread):
             bot.set_webhook(url=Config.WEBHOOK_URL_BASE + Config.WEBHOOK_URL_PATH,
                             certificate=open(Config.WEBHOOK_SSL_CERT, 'r'))
         else:
-            bot.polling(none_stop=True)
+            while (True):
+                try:
+                    bot.polling(none_stop=True)
+                except BaseException as e:
+                    self.l.error(e)
+                    time.sleep(30)
         self.l.info("Webhook enabled: " + str(value))
 
     def init_commands(self):
@@ -202,7 +206,7 @@ class Bot(threading.Thread):
                         actual_ads = get_ads_list(url['url'])
                     self.l.info(f'parsed ads count = {len(actual_ads)}')
                     new_ads = get_new_ads(actual_ads, old_ads)
-                    self.l.info('new_ads count = {len(new_ads)}')
+                    self.l.info(f'new_ads count = {len(new_ads)}')
 
                     for n_a in new_ads:
                         msg = MSG.format(url['name'], n_a['title'].rstrip(), n_a['price'].rstrip(),

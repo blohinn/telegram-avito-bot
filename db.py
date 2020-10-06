@@ -1,9 +1,8 @@
 from pymongo import MongoClient
 
-# client = MongoClient('mongodb://{}:{}@ds213759.mlab.com:13759/monogoosito'.format('bot', 'emilbotavito'))
-# client = MongoClient('mongodb://{}:{}@localhost:27017/monogoosito'.format('bot', 'bot'))
-# client = MongoClient('mongodb', 27017)
-client = MongoClient('localhost', 27017)
+from config import Config
+
+client = MongoClient(Config.MONGO_HOST, 27017)
 db = client['mongoosito']
 search_collection = db['search_collection']
 search_url_and_name_interlayer = db['url_name_interlayer']
