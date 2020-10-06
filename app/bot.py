@@ -1,3 +1,4 @@
+import datetime
 import threading
 import time
 
@@ -229,6 +230,12 @@ class Bot(threading.Thread):
                     time.sleep(random.randint(1, 15) / 10)
                 db.set_actual_ads(i['uid'], tracking_urls)
 
+        def in_between(now, start, end):
+            if start <= end:
+                return start <= now < end
+            else:
+                return start <= now or now < end
+
         def send_updates_thread():
             import schedule
 
@@ -237,7 +244,14 @@ class Bot(threading.Thread):
 
             while True:
                 schedule.run_pending()
-                time.sleep(1)
+                cur_time = datetime.datetime.now().time()
+                if in_between(cur_time, datetime.time(1),
+                              datetime.time(9)):  # todo add break_time_start/end env variable
+                    self.l.info("Time to sleep for 8 hours!")
+                    time.sleep(3600 * 8)
+                    self.l.info("Bot is waking up")
+                else:
+                    time.sleep(1)
 
         thread = threading.Thread(target=send_updates_thread)
         thread.start()
