@@ -46,11 +46,12 @@ def get_html(url):
     headers = {
         'User-Agent': random.choice(USER_AGENTS)
     }
-    proxy = random.choice(proxy_list)
-    proxies = {
-        'http': proxy,
-        'https': proxy,
-    }
+    if proxy_list:
+        proxy = random.choice(proxy_list)
+        proxies = {
+            'http': 'http://' + proxy,
+            'https': 'https://' + proxy,
+        }
     response = requests.get(url, headers=headers, proxies=proxies)
     return response.content
 
