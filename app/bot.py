@@ -189,21 +189,20 @@ class Bot(threading.Thread):
         MSG = "{0}: {1}\n{2}\n{3}\n{4}"
 
         def send_updates():
-            print(str(datetime.datetime.now()) + ": start handling updates")
             sce = db.get_search_collection_entries()
 
             for i in sce:
                 tracking_urls = []
                 for url in i['tracking_urls']:
                     old_ads = url['ads']
-                    print(url['name'])
+                    self.l.info("handling updates for " + url['name'])
                     actual_ads = get_ads_list(url['url'])
                     while not actual_ads:
                         time.sleep(5)
                         actual_ads = get_ads_list(url['url'])
-                    print(f'parsed ads count = {len(actual_ads)}')
+                    self.l.info(f'parsed ads count = {len(actual_ads)}')
                     new_ads = get_new_ads(actual_ads, old_ads)
-                    print(f'new_ads count = {len(new_ads)}')
+                    self.l.info('new_ads count = {len(new_ads)}')
 
                     for n_a in new_ads:
                         msg = MSG.format(url['name'], n_a['title'].rstrip(), n_a['price'].rstrip(),
