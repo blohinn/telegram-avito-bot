@@ -5,6 +5,8 @@ import requests
 from bs4 import BeautifulSoup
 from requests import RequestException
 
+from config import Config
+
 
 def get_proxy():
     proxy = requests.get(
@@ -67,7 +69,7 @@ def get_ads_list(avito_search_url):
 
     soup = BeautifulSoup(html, 'lxml')
 
-    f = open("avito-test.html", "w+")
+    f = open(Config.TEMP + "/avito-test.html", "w+")
     f.write(soup.prettify())
     f.close()
 

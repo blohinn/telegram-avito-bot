@@ -2,35 +2,35 @@ version: '3.3'
 
 services:
 
-  bot:
-    restart: unless-stopped
-    build: .
-    working_dir: /bot
-    volumes:
-      - .:/bot
-    environment:
-      - BOT_API_TOKEN=${BOT_API_TOKEN}
-      - BOT_USERS=${BOT_USERS}
-    depends_on:
-      - mongodb
-    links:
-      - mongodb
-    command: python main.py
-
-  updates:
-    restart: unless-stopped
-    build: .
-    working_dir: /bot
-    volumes:
-      - .:/bot
-    environment:
-      - BOT_API_TOKEN=${BOT_API_TOKEN}
-      - AVITO_PROXY_HTTP=${AVITO_PROXY_HTTP}
-    depends_on:
-      - mongodb
-    links:
-      - mongodb
-    command: python updates.py
+#  bot:
+#    restart: unless-stopped
+#    build: .
+#    working_dir: /bot
+#    volumes:
+#      - .:/bot
+#    environment:
+#      - BOT_API_TOKEN=${BOT_API_TOKEN}
+#      - BOT_USERS=${BOT_USERS}
+#    depends_on:
+#      - mongodb
+#    links:
+#      - mongodb
+#    command: python main.py
+#
+#  updates:
+#    restart: unless-stopped
+#    build: .
+#    working_dir: /bot
+#    volumes:
+#      - .:/bot
+#    environment:
+#      - BOT_API_TOKEN=${BOT_API_TOKEN}
+#      - AVITO_PROXY_HTTP=${AVITO_PROXY_HTTP}
+#    depends_on:
+#      - mongodb
+#    links:
+#      - mongodb
+#    command: python updates.py
 
   mongodb:
     restart: unless-stopped
