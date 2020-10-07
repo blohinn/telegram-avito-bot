@@ -16,6 +16,8 @@ services:
       - WEBHOOK_PORT=${WEBHOOK_PORT}
       - WEBHOOK_LISTEN=${WEBHOOK_LISTEN}
       - AVITO_PROXY_HTTP=${AVITO_PROXY_HTTP}
+      - SLEEP_START=${SLEEP_START}
+      - SLEEP_END=${SLEEP_END}
     ports:
       - 88:88
     depends_on:

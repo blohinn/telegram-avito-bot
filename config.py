@@ -12,6 +12,13 @@ class Config(object):
     BOT_USERS = [int(user_id) for user_id in os.environ.get('BOT_USERS').split(",")] if os.environ.get(
         'BOT_USERS') else None  # Users IDs; None == any user
 
+    SLEEP_START = 1 if not os.environ.get('SLEEP_START') else int(os.environ.get('SLEEP_START'))
+    SLEEP_END = 10 if not os.environ.get('SLEEP_END') else int(os.environ.get('SLEEP_END'))
+    if SLEEP_START > SLEEP_END:
+        SLEEP_TIME = 24 % SLEEP_START + SLEEP_END
+    else:
+        SLEEP_TIME = SLEEP_END - SLEEP_START
+
     TESTING = False
     if os.environ.get('WEBHOOK_ENABLE') == '0':
         WEBHOOK_ENABLE = False

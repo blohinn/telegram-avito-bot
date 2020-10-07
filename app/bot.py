@@ -245,10 +245,10 @@ class Bot(threading.Thread):
             while True:
                 schedule.run_pending()
                 cur_time = datetime.datetime.now().time()
-                if in_between(cur_time, datetime.time(1),
-                              datetime.time(9)):  # todo add break_time_start/end env variable
-                    self.l.info("Time to sleep for 8 hours!")
-                    time.sleep(3600 * 8)
+                if in_between(cur_time, datetime.time(Config.SLEEP_START),
+                              datetime.time(Config.SLEEP_END)):
+                    self.l.info(f"It's ime to sleep for {str(Config.SLEEP_TIME)} hours!")
+                    time.sleep(3600 * Config.SLEEP_TIME) #not accurate
                     self.l.info("Bot is waking up")
                 else:
                     time.sleep(1)
