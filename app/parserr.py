@@ -28,7 +28,7 @@ else:
     proxy_list = [None]
 
 
-def get_html(url):
+def get_html(url, log=None):
     import random
     USER_AGENTS = [
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36',
@@ -52,19 +52,21 @@ def get_html(url):
             'http': 'http://' + proxy,
             'https': 'https://' + proxy,
         }
+        if log:
+            log.info((f"proxy: {proxy}"))
         response = requests.get(url, headers=headers, proxies=proxies, timeout=15)
     else:
         response = requests.get(url, headers=headers, timeout=15)
     return response.content
 
 
-def get_ads_list(avito_search_url):
+def get_ads_list(avito_search_url, log=None):
     """
     :param avito_search_url: url like https://m.avito.ru/kazan/avtomobili/inomarki?pmax=200000&pmin=50000
     :return: ads list
     """
     try:
-        html = get_html(avito_search_url)
+        html = get_html(avito_search_url, log)
     except BaseException:
         return None
     # f = open("avito-1.html", "r")
@@ -123,8 +125,9 @@ def get_ads_list(avito_search_url):
 
 def get_new_ads(new, old):
     _ = []
+    old_links = [l['url'] for l in old]
     for ad in new:
-        if ad not in old:
+        if ad['url'] not in old_links:
             _.append(ad)
     return _
 

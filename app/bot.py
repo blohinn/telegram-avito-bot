@@ -201,10 +201,10 @@ class Bot(threading.Thread):
                 for url in i['tracking_urls']:
                     old_ads = url['ads']
                     self.l.info("handling updates for " + url['name'])
-                    actual_ads = get_ads_list(url['url'])
+                    actual_ads = get_ads_list(url['url'], self.l)
                     while not actual_ads:
                         time.sleep(5)
-                        actual_ads = get_ads_list(url['url'])
+                        actual_ads = get_ads_list(url['url'], self.l)
                     self.l.info(f'parsed ads count = {len(actual_ads)}')
                     new_ads = get_new_ads(actual_ads, old_ads)
                     self.l.info(f'new_ads count = {len(new_ads)}')
