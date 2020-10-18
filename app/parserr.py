@@ -52,9 +52,9 @@ def get_html(url, proxy=None):
             'http': 'http://' + proxy,
             'https': 'https://' + proxy,
         }
-        response = requests.get(url, headers=headers, proxies=proxies, timeout=15)
+        response = requests.get(url, headers=headers, proxies=proxies, timeout=Config.REQUEST_TIMEOUT)
     else:
-        response = requests.get(url, headers=headers, timeout=15)
+        response = requests.get(url, headers=headers, timeout=Config.REQUEST_TIMEOUT)
     return response.content
 
 

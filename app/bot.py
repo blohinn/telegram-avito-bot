@@ -200,14 +200,15 @@ class Bot(threading.Thread):
                 tracking_urls = []
                 for url in i['tracking_urls']:
                     old_ads = url['ads']
-                    self.l.info("handling updates for " + url['name'])
+                    self.l.debug("handling updates for " + url['name'])
                     actual_ads = get_ads_list(url['url'], self.l)
                     while not actual_ads:
                         time.sleep(5)
                         actual_ads = get_ads_list(url['url'], self.l)
-                    self.l.info(f'parsed ads count = {len(actual_ads)}')
+                    self.l.debug(f'parsed ads count = {len(actual_ads)}')
                     new_ads = get_new_ads(actual_ads, old_ads)
-                    self.l.info(f'new_ads count = {len(new_ads)}')
+                    if new_ads:
+                        self.l.info(f'new_ads count = {len(new_ads)}')
 
                     for n_a in new_ads:
                         msg = MSG.format(url['name'], n_a['title'].rstrip(), n_a['price'].rstrip(),
@@ -228,7 +229,7 @@ class Bot(threading.Thread):
                     filtered = [u for u in old_ads if 'parsed' in u and u['parsed'] + 604800 > timestamp]
                     url['ads'] = filtered
                     url['ads'].extend(new_ads)
-                    self.l.info(f"ads in db {str(len(url['ads']))}")
+                    self.l.debug(f"ads in db {str(len(url['ads']))}")
                     tracking_urls.append(url)
 
                     import random
