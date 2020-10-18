@@ -223,7 +223,12 @@ class Bot(threading.Thread):
 
                         bot.send_message(i['uid'], msg)
 
-                    url['ads'] = actual_ads
+                    timestamp = int(time.time())
+
+                    filtered = [u for u in old_ads if 'parsed' in u and u['parsed'] + 604800 > timestamp]
+                    url['ads'] = filtered
+                    url['ads'].extend(new_ads)
+                    self.l.info(f"ads in db {str(len(url['ads']))}")
                     tracking_urls.append(url)
 
                     import random
@@ -248,7 +253,7 @@ class Bot(threading.Thread):
                 if in_between(cur_time, datetime.time(Config.SLEEP_START),
                               datetime.time(Config.SLEEP_END)):
                     self.l.info(f"It's ime to sleep for {str(Config.SLEEP_TIME)} hours!")
-                    time.sleep(3600 * Config.SLEEP_TIME) #not accurate
+                    time.sleep(3600 * Config.SLEEP_TIME)  # not accurate
                     self.l.info("Bot is waking up")
                 else:
                     time.sleep(1)

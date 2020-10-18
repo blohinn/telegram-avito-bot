@@ -1,6 +1,7 @@
 import json
 import os
 import random
+import time
 
 import requests
 from bs4 import BeautifulSoup
@@ -26,7 +27,7 @@ if proxy_env:
     else:
         proxy_list = os.environ.get('AVITO_PROXY_HTTP').split(",")
 else:
-    proxy_list = [None]
+    proxy_list = None
 
 
 def get_html(url, proxy=None):
@@ -87,7 +88,7 @@ def get_ads_list(avito_search_url, log=None):
     if log and not ads:
         log.warn(f"no ads with proxy {proxy}")
     print(f'ads count {len(ads)}')
-
+    timestamp = int(time.time())
     ads_list = []
     for ad in ads:
         id, name, url, price, img_url, is_vip = None, None, None, None, None, False
@@ -120,6 +121,7 @@ def get_ads_list(avito_search_url, log=None):
                 'title': name,
                 'price': price,
                 'created': created,
+                'parsed': timestamp,
                 'url': url,
                 'img': img_url,
             })
