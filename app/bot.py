@@ -245,7 +245,7 @@ class Bot(threading.Thread):
             import schedule
 
             send_updates()
-            schedule.every(2).minutes.do(send_updates)
+            schedule.every(Config.PARSING_INTERVAL_SEC).seconds.do(send_updates)
 
             while True:
                 schedule.run_pending()
