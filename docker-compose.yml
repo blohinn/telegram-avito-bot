@@ -9,28 +9,22 @@ services:
     volumes:
       - .:/bot
     environment:
-      - BOT_API_TOKEN=${BOT_API_TOKEN}
+      - TG_TOKEN=${TG_TOKEN}
       - BOT_USERS=${BOT_USERS}
-    depends_on:
-      - mongodb
-    links:
-      - mongodb
-    command: python main.py
-
-  updates:
-    restart: unless-stopped
-    build: .
-    working_dir: /bot
-    volumes:
-      - .:/bot
-    environment:
-      - BOT_API_TOKEN=${BOT_API_TOKEN}
+      - WEBHOOK_ENABLE=${WEBHOOK_ENABLE}
+      - WEBHOOK_HOST=${WEBHOOK_HOST}
+      - WEBHOOK_PORT=${WEBHOOK_PORT}
+      - WEBHOOK_LISTEN=${WEBHOOK_LISTEN}
       - AVITO_PROXY_HTTP=${AVITO_PROXY_HTTP}
+      - SLEEP_START=${SLEEP_START}
+      - SLEEP_END=${SLEEP_END}
+    ports:
+      - 88:88
     depends_on:
       - mongodb
     links:
       - mongodb
-    command: python updates.py
+    command: python start.py
 
   mongodb:
     restart: unless-stopped

@@ -1,9 +1,13 @@
 import json
 import os
+import random
+import time
 
 import requests
 from bs4 import BeautifulSoup
 from requests import RequestException
+
+from config import Config
 
 
 def get_proxy():
@@ -23,11 +27,10 @@ if proxy_env:
     else:
         proxy_list = os.environ.get('AVITO_PROXY_HTTP').split(",")
 else:
-    proxy_list = [None]
+    proxy_list = None
 
 
-def get_html(url):
-    import random
+def get_html(url, proxy=None):
     USER_AGENTS = [
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36',
         'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36',
@@ -44,39 +47,48 @@ def get_html(url):
     headers = {
         'User-Agent': random.choice(USER_AGENTS)
     }
-    proxy = random.choice(proxy_list)
-    proxies = {
-        'http': proxy,
-        'https': proxy,
-    }
-    response = requests.get(url, headers=headers, proxies=proxies)
+    if proxy_list:
+        proxies = {
+            'http': 'http://' + proxy,
+            'https': 'https://' + proxy,
+        }
+        response = requests.get(url, headers=headers, proxies=proxies, timeout=Config.REQUEST_TIMEOUT)
+    else:
+        response = requests.get(url, headers=headers, timeout=Config.REQUEST_TIMEOUT)
     return response.content
 
 
-def get_ads_list(avito_search_url):
+def get_ads_list(avito_search_url, log=None):
     """
     :param avito_search_url: url like https://m.avito.ru/kazan/avtomobili/inomarki?pmax=200000&pmin=50000
     :return: ads list
     """
+    if proxy_list:
+        proxy = random.choice(proxy_list)
+    else:
+        proxy = None
     try:
-        html = get_html(avito_search_url)
-    except BaseException:
-        return None
+        html = get_html(avito_search_url, proxy)
+    except BaseException as be:
+        if log:
+            log.error(f"{proxy}, {be}")
+        return
     # f = open("avito-1.html", "r")
     # html = f.read()
 
     soup = BeautifulSoup(html, 'lxml')
 
-    f = open("avito-test.html", "w+")
+    f = open(Config.TEMP + "/avito-test.html", "w+")
     f.write(soup.prettify())
     f.close()
 
     print(f'html lenght {len(soup.prettify())}')
 
     ads = soup.select('.item.item_table')
-
+    if log and not ads:
+        log.warn(f"no ads with proxy {proxy}")
     print(f'ads count {len(ads)}')
-
+    timestamp = int(time.time())
     ads_list = []
     for ad in ads:
         id, name, url, price, img_url, is_vip = None, None, None, None, None, False
@@ -109,17 +121,18 @@ def get_ads_list(avito_search_url):
                 'title': name,
                 'price': price,
                 'created': created,
+                'parsed': timestamp,
                 'url': url,
                 'img': img_url,
             })
-
     return ads_list
 
 
 def get_new_ads(new, old):
     _ = []
+    old_links = [l['url'] for l in old]
     for ad in new:
-        if ad not in old:
+        if ad['url'] not in old_links:
             _.append(ad)
     return _
 
